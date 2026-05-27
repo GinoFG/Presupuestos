@@ -530,81 +530,89 @@ function fmtFecha(v){
 
 function fmtUSD(n){return '$ '+parseFloat(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 
+const MEMBRETE_URL='https://ginofg.github.io/Presupuestos/membrete.png';
+
 function buildHTML(d,items){
   let rows='',total=0;
   items.forEach((it,i)=>{
     const sub=it.cant*it.punit;total+=sub;
     rows+=`<tr><td class="tcen">${String(i+1).padStart(3,'0')}</td><td class="tcen">${it.serv}</td><td class="tcen">${it.equipo}</td><td style="font-size:9px;line-height:1.5">${it.desc.replace(/\n/g,'<br>')}</td><td class="tcen">${it.lugar}</td><td class="tcen">${it.cant}</td><td class="tnum">${fmtUSD(it.punit)}</td><td class="tnum">${fmtUSD(sub)}</td></tr>`;
   });
-  const hdr=`<div class="pres-hdr"><div><div class="pres-logo">E<span>S</span>I</div><div style="font-size:8px;color:#555;margin-top:2px">ELECTRONIC SYSTEMS INTERNATIONAL S.A. — RUC 20100685095</div></div><div class="pres-svc">MONITOREO A DISTANCIA | VIBRACIONES | BALANCEO DINÁMICO<br>ALINEAMIENTO | TERMOGRAFÍA | CAPACITACIÓN<br><span style="font-size:8px;color:#888">"SOLUCIONES COMPROBADAS PARA LA INDUSTRIA"</span></div></div>`;
-  const pie=`<div class="pres-pie"><span>ELECTRONIC SYSTEMS INTERNATIONAL</span><span>Urb. Tarapacá – Calle Germania 147, Callao | Telf.: 464-0660 / 451-9861</span></div>`;
+
   const firma=`<div style="font-size:10px;margin-top:14px">Sin otro particular y a la espera de la aprobación de nuestra oferta, quedamos de Uds.<br>Atentamente,</div><div class="firma-blk"><div class="firma-ln"></div><div style="font-weight:700;font-size:10px">${d.asesora}</div><div style="font-size:9.5px">ASESORA COMERCIAL</div><div style="font-size:9.5px">TELEF. ${d.asesoraTel} / ${d.asesoraEmail}</div></div>`;
 
-  document.getElementById('pres-p1').innerHTML=`${hdr}
-    <div class="pres-num">PRESUPUESTO N° ${d.numPres}</div>
-    <div class="pres-meta">
-      <div>
-        <div class="pmr"><span class="pml">Empresa:</span><span>${d.empresa}</span></div>
-        <div class="pmr"><span class="pml">Ruc:</span><span>${d.ruc}</span></div>
-        <div class="pmr"><span class="pml">Planta:</span><span>${d.planta}</span></div>
-        <div class="pmr"><span class="pml">Presente. –</span></div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:10px;margin-bottom:6px">${d.fecha}</div>
-        <div class="pmr" style="justify-content:flex-end"><span class="pml">Atención:</span><span>${d.contacto}</span></div>
-        <div class="pmr" style="justify-content:flex-end"><span class="pml">Cargo:</span><span>${d.cargo}</span></div>
-        <div class="pmr" style="justify-content:flex-end"><span class="pml">Teléfono:</span><span>${d.tel}</span></div>
-      </div>
-    </div>
-    <div style="font-size:10.5px;margin:10px 0 4px">Estimado(a) ${d.cargo||'señor(a)'}:</div>
-    <div style="font-size:10.5px;margin-bottom:10px">Es grato dirigirnos a usted a fin de alcanzarle de acuerdo a su requerimiento, nuestro presupuesto por lo siguiente:</div>
-    <table class="pres-table">
-      <thead><tr><th style="width:34px">ITMS</th><th style="width:58px">SERV.</th><th style="width:88px">EQUIPO</th><th>DESCRIPCIÓN</th><th style="width:58px">LUGAR</th><th style="width:34px">CANT</th><th style="width:78px">P. UNITARIO</th><th style="width:68px">TOTAL</th></tr></thead>
-      <tbody>${rows}</tbody>
-      <tr class="pres-total"><td colspan="7" style="text-align:right;font-size:10px;padding-right:8px">TOTAL SIN IGV</td><td class="tnum">${fmtUSD(total)}</td></tr>
-    </table>
-    <div class="pres-cond"><h4>CONDICIONES COMERCIALES DEL SERVICIO</h4>
-      <ol>
-        <li>Forma de Pago: <strong>${d.formaPago}</strong></li>
-        <li>Los precios no incluyen IGV.</li>
-        <li>Validez de la oferta ${d.validez}.</li>
-        <li>Coordinar con ${d.diasCoord} días de anticipación los trabajos a ejecutarse, previa emisión de la Orden de Servicio y/o Compra al correo ventas01@esi-peru.net.</li>
-        <li>Tiempo estimado: ${d.tiempo}.</li>
-        <li>Personal Técnico: ${d.personal}.</li>
-        <li class="hi">En caso que requiera el servicio Domingo o Feriado, se cobrará el 50% adicional al monto ofertado.</li>
-        <li>Considerar $50 adicional por hora en los trabajos fuera del horario habitual (Lun a Vie 8:00 a.m. a 5:00 p.m.) y (Sáb 8:00 a.m. a 1:00 p.m.), previa coordinación con nosotros; será valorizado al final del servicio.</li>
-        <li>Las reprogramaciones de servicio por mala coordinación del cliente, o labores adicionales en las máquinas que ocasionen demora del servicio programado, se considerarán como día efectivo. El costo por No Servicio es de $500; montos inferiores se cobrarán según el monto ofertado.</li>
-        <li>Cuentas de pago:</li>
-      </ol>
-      <div class="ctas"><strong>BANCO DE CRÉDITO</strong><br>Cta. Cte. Dólares N° 192-2199296-1-19 | CCI N° 002-192-002199296119-39<br>Cta. Cte. Soles N° 192-2323000-0-46 | CCI N° 002-192-002323000046-37<br>CTA. CTE. DETRACCIÓN BCO. NACIÓN N° 00-000364746</div>
-      <ol start="11" style="padding-left:16px;font-size:9.5px;line-height:1.75"><li>Además del pago por Transferencia Bancaria, Cheques o Cheque de Gerencia, ELECTRONIC SYSTEMS INTERNATIONAL S.A. acepta: Factoring o Pronto Pago. El cliente deberá informar la entidad bancaria con la que tiene convenio para efectuar los trámites de inscripción al correo esi@esi-peru.net de Facturación y Cobranzas.</li></ol>
-    </div>
-    ${firma}${pie}`;
+  const estiloBase=`background-image:url('${MEMBRETE_URL}');background-size:100% 100%;background-repeat:no-repeat;`;
 
-  document.getElementById('pres-p2').innerHTML=`${hdr}
-    <div class="condgen-title">CONDICIONES GENERALES DEL SERVICIO</div>
-    <div class="condgen-sub">Responsabilidad del cliente:</div>
-    <ol class="condgen-ol">
-      <li>Brindar toda la información de Formatos, Charlas de inducción, Fotocheck, EPPs, etc., según el sistema de Seguridad y Salud en el Trabajo del CLIENTE, necesarios para el acceso y ejecución del servicio.</li>
-      <li>Coordinar el ingreso de personal ESI a su planta y/o instalaciones.</li>
-      <li>El cliente dará las facilidades necesarias para el buen desarrollo del servicio; las zonas a inspeccionar deberán estar habilitadas, listas, limpias, libres de pintura, óxidos, grasas y de cualquier elemento que pueda interferir con dicha inspección.</li>
-      <li>Brindar la información necesaria de ubicación y codificación de los elementos a inspeccionar.</li>
-      <li>Designar a un personal responsable para la operatividad de los equipos (encendido, apagado y manejo del equipo) y que realice la supervisión del servicio durante el proceso de recolección de datos.</li>
-      <li>La persona responsable de la supervisión del trabajo debe brindar toda información relevante en el FORMATO ACTA DE TRABAJO ESI (conformidad, observaciones y comentarios) y con su firma para la corroboración de horas de ejecución del trabajo.</li>
-      <li>Para trabajos en altura, proveer andamios y escaleras para acceder a las zonas de inspección.</li>
-    </ol>
-    <div class="condgen-sub">Responsabilidad de ESI:</div>
-    <ol class="condgen-ol">
-      <li>Entregar toda la información de Seguridad y Salud en el Trabajo solicitada por EL CLIENTE y proveer personal con las credenciales (fotocheck, EPPs, entre otros) completos para el acceso y ejecución del servicio.</li>
-      <li>Presentarse en la fecha y hora pactada según cronograma acordado con EL CLIENTE.</li>
-      <li>Ejecución de los trabajos de acuerdo a las normas técnicas indicadas por el Cliente.</li>
-      <li>Días para el servicio por E/P: Prueba Normal 3–4 horas / Prueba de Cala 5 horas / Evaluación de descansos 6 a 8 horas.</li>
-      <li>Los tiempos de entrega de los informes variarán de acuerdo a la cantidad y criticidad de las tomas realizadas: entre 5 a 7 días hábiles.</li>
-      <li>Solucionar preguntas que pudiera tener EL CLIENTE en base al informe realizado y brindar la información adicional que necesite para su mejor entendimiento.</li>
-    </ol>
-    <div style="font-size:10px;margin-top:16px">Sin otro particular y a la espera de la aprobación de nuestra oferta, quedamos de Uds.<br>Atentamente,</div>
-    <div class="firma-blk"><div class="firma-ln"></div><div style="font-weight:700;font-size:10px">${d.asesora}</div><div style="font-size:9.5px">ASESORA COMERCIAL</div><div style="font-size:9.5px">TELEF. ${d.asesoraTel} / ${d.asesoraEmail}</div></div>
-    ${pie}`;
+  document.getElementById('pres-p1').setAttribute('style',estiloBase);
+  document.getElementById('pres-p1').innerHTML=`
+    <div style="padding:118px 44px 110px 44px;">
+      <div class="pres-num">PRESUPUESTO N° ${d.numPres}</div>
+      <div class="pres-meta">
+        <div>
+          <div class="pmr"><span class="pml">Empresa:</span><span>${d.empresa}</span></div>
+          <div class="pmr"><span class="pml">Ruc:</span><span>${d.ruc}</span></div>
+          <div class="pmr"><span class="pml">Planta:</span><span>${d.planta}</span></div>
+          <div class="pmr"><span class="pml">Presente. –</span></div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:10px;margin-bottom:6px">${d.fecha}</div>
+          <div class="pmr" style="justify-content:flex-end"><span class="pml">Atención:</span><span>${d.contacto}</span></div>
+          <div class="pmr" style="justify-content:flex-end"><span class="pml">Cargo:</span><span>${d.cargo}</span></div>
+          <div class="pmr" style="justify-content:flex-end"><span class="pml">Teléfono:</span><span>${d.tel}</span></div>
+        </div>
+      </div>
+      <div style="font-size:10.5px;margin:10px 0 4px">Estimado(a) ${d.cargo||'señor(a)'}:</div>
+      <div style="font-size:10.5px;margin-bottom:10px">Es grato dirigirnos a usted a fin de alcanzarle de acuerdo a su requerimiento, nuestro presupuesto por lo siguiente:</div>
+      <table class="pres-table">
+        <thead><tr><th style="width:34px">ITMS</th><th style="width:58px">SERV.</th><th style="width:88px">EQUIPO</th><th>DESCRIPCIÓN</th><th style="width:58px">LUGAR</th><th style="width:34px">CANT</th><th style="width:78px">P. UNITARIO</th><th style="width:68px">TOTAL</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tr class="pres-total"><td colspan="7" style="text-align:right;font-size:10px;padding-right:8px">TOTAL SIN IGV</td><td class="tnum">${fmtUSD(total)}</td></tr>
+      </table>
+      <div class="pres-cond"><h4>CONDICIONES COMERCIALES DEL SERVICIO</h4>
+        <ol>
+          <li>Forma de Pago: <strong>${d.formaPago}</strong></li>
+          <li>Los precios no incluyen IGV.</li>
+          <li>Validez de la oferta ${d.validez}.</li>
+          <li>Coordinar con ${d.diasCoord} días de anticipación los trabajos a ejecutarse, previa emisión de la Orden de Servicio y/o Compra al correo ventas01@esi-peru.net.</li>
+          <li>Tiempo estimado: ${d.tiempo}.</li>
+          <li>Personal Técnico: ${d.personal}.</li>
+          <li class="hi">En caso que requiera el servicio Domingo o Feriado, se cobrará el 50% adicional al monto ofertado.</li>
+          <li>Considerar $50 adicional por hora en los trabajos fuera del horario habitual (Lun a Vie 8:00 a.m. a 5:00 p.m.) y (Sáb 8:00 a.m. a 1:00 p.m.), previa coordinación con nosotros; será valorizado al final del servicio.</li>
+          <li>Las reprogramaciones de servicio por mala coordinación del cliente, o labores adicionales en las máquinas que ocasionen demora del servicio programado, se considerarán como día efectivo. El costo por No Servicio es de $500; montos inferiores se cobrarán según el monto ofertado.</li>
+          <li>Cuentas de pago:</li>
+        </ol>
+        <div class="ctas"><strong>BANCO DE CRÉDITO</strong><br>Cta. Cte. Dólares N° 192-2199296-1-19 | CCI N° 002-192-002199296119-39<br>Cta. Cte. Soles N° 192-2323000-0-46 | CCI N° 002-192-002323000046-37<br>CTA. CTE. DETRACCIÓN BCO. NACIÓN N° 00-000364746</div>
+        <ol start="11" style="padding-left:16px;font-size:9.5px;line-height:1.75"><li>Además del pago por Transferencia Bancaria, Cheques o Cheque de Gerencia, ELECTRONIC SYSTEMS INTERNATIONAL S.A. acepta: Factoring o Pronto Pago. El cliente deberá informar la entidad bancaria con la que tiene convenio para efectuar los trámites de inscripción al correo esi@esi-peru.net de Facturación y Cobranzas.</li></ol>
+      </div>
+      ${firma}
+    </div>`;
+
+  document.getElementById('pres-p2').setAttribute('style',estiloBase);
+  document.getElementById('pres-p2').innerHTML=`
+    <div style="padding:118px 44px 110px 44px;">
+      <div class="condgen-title">CONDICIONES GENERALES DEL SERVICIO</div>
+      <div class="condgen-sub">Responsabilidad del cliente:</div>
+      <ol class="condgen-ol">
+        <li>Brindar toda la información de Formatos, Charlas de inducción, Fotocheck, EPPs, etc., según el sistema de Seguridad y Salud en el Trabajo del CLIENTE, necesarios para el acceso y ejecución del servicio.</li>
+        <li>Coordinar el ingreso de personal ESI a su planta y/o instalaciones.</li>
+        <li>El cliente dará las facilidades necesarias para el buen desarrollo del servicio; las zonas a inspeccionar deberán estar habilitadas, listas, limpias, libres de pintura, óxidos, grasas y de cualquier elemento que pueda interferir con dicha inspección.</li>
+        <li>Brindar la información necesaria de ubicación y codificación de los elementos a inspeccionar.</li>
+        <li>Designar a un personal responsable para la operatividad de los equipos (encendido, apagado y manejo del equipo) y que realice la supervisión del servicio durante el proceso de recolección de datos.</li>
+        <li>La persona responsable de la supervisión del trabajo debe brindar toda información relevante en el FORMATO ACTA DE TRABAJO ESI (conformidad, observaciones y comentarios) y con su firma para la corroboración de horas de ejecución del trabajo.</li>
+        <li>Para trabajos en altura, proveer andamios y escaleras para acceder a las zonas de inspección.</li>
+      </ol>
+      <div class="condgen-sub">Responsabilidad de ESI:</div>
+      <ol class="condgen-ol">
+        <li>Entregar toda la información de Seguridad y Salud en el Trabajo solicitada por EL CLIENTE y proveer personal con las credenciales (fotocheck, EPPs, entre otros) completos para el acceso y ejecución del servicio.</li>
+        <li>Presentarse en la fecha y hora pactada según cronograma acordado con EL CLIENTE.</li>
+        <li>Ejecución de los trabajos de acuerdo a las normas técnicas indicadas por el Cliente.</li>
+        <li>Días para el servicio por E/P: Prueba Normal 3–4 horas / Prueba de Cala 5 horas / Evaluación de descansos 6 a 8 horas.</li>
+        <li>Los tiempos de entrega de los informes variarán de acuerdo a la cantidad y criticidad de las tomas realizadas: entre 5 a 7 días hábiles.</li>
+        <li>Solucionar preguntas que pudiera tener EL CLIENTE en base al informe realizado y brindar la información adicional que necesite para su mejor entendimiento.</li>
+      </ol>
+      <div style="font-size:10px;margin-top:16px">Sin otro particular y a la espera de la aprobación de nuestra oferta, quedamos de Uds.<br>Atentamente,</div>
+      <div class="firma-blk"><div class="firma-ln"></div><div style="font-weight:700;font-size:10px">${d.asesora}</div><div style="font-size:9.5px">ASESORA COMERCIAL</div><div style="font-size:9.5px">TELEF. ${d.asesoraTel} / ${d.asesoraEmail}</div></div>
+    </div>`;
 }
 
 async function generarPDF(){
