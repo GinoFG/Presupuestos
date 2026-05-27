@@ -530,9 +530,9 @@ function fmtFecha(v){
 
 function fmtUSD(n){return '$ '+parseFloat(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 
-const MEMBRETE_URL='https://ginofg.github.io/Presupuestos/membrete.png';
-
 function buildHTML(d,items){
+  const MEMBRETE='https://ginofg.github.io/Presupuestos/membrete.png';
+  const estiloBase=`background-image:url('${MEMBRETE}');background-size:100% 100%;background-repeat:no-repeat;`;
   let rows='',total=0;
   items.forEach((it,i)=>{
     const sub=it.cant*it.punit;total+=sub;
