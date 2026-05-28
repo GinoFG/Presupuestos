@@ -73,7 +73,7 @@ body{font-family:Arial,sans-serif;font-size:14px;background:#f5f5f5}
 .pres-cond li{margin-bottom:2px}
 .hi{color:#b0001e;font-weight:700}
 .ctas{margin:4px 0 6px 16px;font-size:9px;line-height:1.7}
-.firma-blk{display:inline-block;text-align:center;margin-top:16px}
+.firma-blk{display:block;text-align:center;margin-top:16px}.firma-ln{margin:3px auto 2px}
 .firma-ln{border-top:1px solid #333;width:190px;margin:3px 0 2px}
 .condgen-title{font-size:11px;font-weight:700;text-decoration:underline;text-align:center;margin-bottom:10px}
 .condgen-sub{font-size:10px;font-weight:700;text-align:center;margin:8px 0 4px}
@@ -114,9 +114,9 @@ body{font-family:Arial,sans-serif;font-size:14px;background:#f5f5f5}
       <div class="field"><label>RUC</label><input type="text" id="ruc" placeholder="20XXXXXXXXX"></div>
     </div>
     <div class="grid3" style="margin-bottom:12px">
-      <div class="field"><label>Planta / sede</label><input type="text" id="planta" placeholder="Ej: CALLAO"></div>
-      <div class="field"><label>Contacto</label><input type="text" id="contacto" placeholder="Nombre"></div>
-      <div class="field"><label>Cargo</label><input type="text" id="cargo" placeholder="Ej: ING. TRAMO 3"></div>
+      <div class="field"><label>Planta / sede</label><input type="text" id="planta" placeholder="Ej: Callao" oninput="toTitleCase(this)"></div>
+      <div class="field"><label>Contacto</label><input type="text" id="contacto" placeholder="Nombre" oninput="toTitleCase(this)"></div>
+      <div class="field"><label>Cargo</label><input type="text" id="cargo" placeholder="Ej: Ing. Tramo 3" oninput="toTitleCase(this)"></div>
     </div>
     <div class="field" style="max-width:220px"><label>Teléfono</label><input type="text" id="telCliente" placeholder="999 000 000"></div>
   </div>
@@ -135,7 +135,22 @@ body{font-family:Arial,sans-serif;font-size:14px;background:#f5f5f5}
   <div class="card"><h2>Condiciones comerciales</h2>
     <div class="grid3">
       <div class="field"><label>Forma de pago</label>
-        <select id="formaPago"><option>CONTADO</option><option>30 DÍAS</option><option>45 DÍAS</option><option selected>60 DÍAS</option><option>50% ADELANTO / 50% CONTRA ENTREGA</option></select>
+        <select id="formaPago" onchange="togglePagoCustom(this)" style="flex:1;border:0.5px solid #ccc;border-radius:6px;padding:7px 10px;font-size:13px">
+          <option>CONTADO</option>
+          <option>30 DÍAS</option>
+          <option>45 DÍAS</option>
+          <option selected>60 DÍAS</option>
+          <option>90 DÍAS</option>
+          <option>120 DÍAS</option>
+          <option>FACTORING</option>
+          <option>FACTORING A 30 DÍAS</option>
+          <option>FACTORING A 60 DÍAS</option>
+          <option>FACTORING A 90 DÍAS</option>
+          <option>FACTORING A 120 DÍAS</option>
+          <option>50% ADELANTO | 50% CONTRA ENTREGA</option>
+          <option value="__otro__">Otro (escribir)...</option>
+        </select>
+        <input type="text" id="formaPagoCustom" placeholder="Escribir forma de pago..." style="display:none;margin-top:6px;border:0.5px solid #ccc;border-radius:6px;padding:7px 10px;font-size:13px;width:100%">
       </div>
       <div class="field"><label>Validez de la oferta</label>
         <select id="validez"><option>Quince (15 días)</option><option>Treinta (30 días)</option></select>
@@ -562,7 +577,7 @@ function buildPages(d,items){
       <td class="tcen">${String(i+1).padStart(3,'0')}</td>
       <td class="tcen">${it.serv}</td>
       <td class="tcen">${it.equipo}</td>
-      <td style="font-size:9px;line-height:1.5">${it.desc.replace(/\n/g,'<br>')}</td>
+      <td style="font-size:9px;line-height:1.5">${it.desc.replace(/\n/g,'<br>').replace(/(NOTA:[^<]*)/g,'<span style="color:#b0001e;font-weight:700">$1</span>')}</td>
       <td class="tcen">${it.lugar}</td>
       <td class="tcen">${it.cant}</td>
       <td class="tnum">${fmtUSD(it.punit)}</td>
@@ -582,20 +597,22 @@ function buildPages(d,items){
   // ── PÁGINA 1 ──
   document.getElementById('pres-body1').innerHTML=`
     <div class="pres-num">PRESUPUESTO N° ${d.numPres}</div>
-    <div class="pres-meta">
-      <div>
-        <div class="pmr"><span class="pml">Empresa:</span><span>${d.empresa}</span></div>
-        <div class="pmr"><span class="pml">Ruc:</span><span>${d.ruc}</span></div>
-        <div class="pmr"><span class="pml">Planta:</span><span>${d.planta}</span></div>
-        <div class="pmr"><span class="pml">Presente. –</span></div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:10px;margin-bottom:6px">${d.fecha}</div>
-        <div class="pmr" style="justify-content:flex-end"><span class="pml">Atención:</span><span>${d.contacto}</span></div>
-        <div class="pmr" style="justify-content:flex-end"><span class="pml">Cargo:</span><span>${d.cargo}</span></div>
-        <div class="pmr" style="justify-content:flex-end"><span class="pml">Teléfono:</span><span>${d.tel}</span></div>
-      </div>
-    </div>
+    <table style="width:100%;margin-bottom:8px;font-size:10.5px;border-collapse:collapse">
+      <tr>
+        <td style="vertical-align:top;width:55%">
+          <div class="pmr"><span class="pml">Empresa:</span><span>${d.empresa}</span></div>
+          <div class="pmr"><span class="pml">Ruc:</span><span>${d.ruc}</span></div>
+          <div class="pmr"><span class="pml">Planta:</span><span>${d.planta}</span></div>
+          <div class="pmr"><span class="pml">Presente. –</span></div>
+        </td>
+        <td style="vertical-align:top;text-align:right;width:45%">
+          <div style="font-size:10px;margin-bottom:6px">${d.fecha}</div>
+          <div class="pmr" style="justify-content:flex-end"><span class="pml">Atención:</span><span>${d.contacto}</span></div>
+          <div class="pmr" style="justify-content:flex-end"><span class="pml">Cargo:</span><span>${d.cargo}</span></div>
+          <div class="pmr" style="justify-content:flex-end"><span class="pml">Teléfono:</span><span>${d.tel}</span></div>
+        </td>
+      </tr>
+    </table>
     <div style="font-size:10.5px;margin:10px 0 4px">Estimado(a) ${d.cargo||'señor(a)'}:</div>
     <div style="font-size:10.5px;margin-bottom:10px">Es grato dirigirnos a usted a fin de alcanzarle de acuerdo a su requerimiento, nuestro presupuesto por lo siguiente:</div>
     <table class="pres-table">
@@ -615,7 +632,7 @@ function buildPages(d,items){
         <li>Forma de Pago: <strong>${d.formaPago}</strong></li>
         <li>Los precios no incluyen IGV.</li>
         <li>Validez de la oferta ${d.validez}.</li>
-        <li>Coordinar con ${d.diasCoord} días de anticipación los trabajos a ejecutarse, previa emisión de la Orden de Servicio y/o Compra al correo ventas01@esi-peru.net.</li>
+        <li>Coordinar con ${d.diasCoord} días de anticipación los trabajos a ejecutarse, previa emisión de la Orden de Servicio y/o Compra al correo ${d.asesoraEmail}.</li>
         <li>Tiempo estimado: ${d.tiempo}.</li>
         <li>Personal Técnico: ${d.personal}.</li>
         <li class="hi">En caso que requiera el servicio Domingo o Feriado, se cobrará el 50% adicional al monto ofertado.</li>
@@ -631,7 +648,7 @@ function buildPages(d,items){
         <li>Además del pago por Transferencia Bancaria, Cheques o Cheque de Gerencia, ELECTRONIC SYSTEMS INTERNATIONAL S.A. acepta: Factoring o Pronto Pago. El cliente deberá informar la entidad bancaria con la que tiene convenio para efectuar los trámites de inscripción al correo esi@esi-peru.net de Facturación y Cobranzas.</li>
       </ol>
     </div>
-    ${firma}`;
+    <div style="text-align:center">${firma}</div>`;
 
   // ── PÁGINA 2 ──
   document.getElementById('pres-body2').innerHTML=`
@@ -655,13 +672,13 @@ function buildPages(d,items){
       <li>Los tiempos de entrega de los informes variarán de acuerdo a la cantidad y criticidad de las tomas realizadas: entre 5 a 7 días hábiles.</li>
       <li>Solucionar preguntas que pudiera tener EL CLIENTE en base al informe realizado y brindar la información adicional que necesite para su mejor entendimiento.</li>
     </ol>
-    <div style="font-size:10px;margin-top:16px">Sin otro particular y a la espera de la aprobación de nuestra oferta, quedamos de Uds.<br>Atentamente,</div>
-    <div class="firma-blk">
+    <div style="font-size:10px;margin-top:16px;text-align:center">Sin otro particular y a la espera de la aprobación de nuestra oferta, quedamos de Uds.<br>Atentamente,</div>
+    <div style="text-align:center"><div class="firma-blk">
       <div class="firma-ln"></div>
       <div style="font-weight:700;font-size:10px">${d.asesora}</div>
       <div style="font-size:9.5px">ASESORA COMERCIAL</div>
       <div style="font-size:9.5px">TELEF. ${d.asesoraTel} / ${d.asesoraEmail}</div>
-    </div>`;
+    </div></div>`;
 }
 
 async function generarPDF(){
@@ -695,7 +712,7 @@ async function generarPDF(){
     asesora:asesoraName,
     asesoraTel:asDat.tel,
     asesoraEmail:asDat.email,
-    formaPago:document.getElementById('formaPago').value,
+    formaPago:getFormaPago(),
     validez:document.getElementById('validez').value,
     diasCoord:document.getElementById('diasCoord').value,
     tiempo:document.getElementById('tiempoEst').value,
@@ -773,6 +790,26 @@ function guardarAsesora(){
   alert(`✓ Asesora "${nombre}" agregada.`);
 }
 addItem();
+
+function togglePagoCustom(sel){
+  const custom = document.getElementById('formaPagoCustom');
+  custom.style.display = sel.value === '__otro__' ? 'block' : 'none';
+  if(sel.value !== '__otro__') custom.value = '';
+}
+
+function getFormaPago(){
+  const sel = document.getElementById('formaPago');
+  if(sel.value === '__otro__'){
+    return document.getElementById('formaPagoCustom').value.trim() || 'POR DEFINIR';
+  }
+  return sel.value;
+}
+
+function toTitleCase(input){
+  const pos = input.selectionStart;
+  input.value = input.value.replace(/\b\w/g, c => c.toUpperCase());
+  input.setSelectionRange(pos, pos);
+}
 </script>
 </body>
 </html>
